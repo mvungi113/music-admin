@@ -12,25 +12,23 @@ class ReportsController extends Controller
     {
         $url = env('SUPABASE_URL') . '/rest/v1';
         $key = env('SUPABASE_KEY');
+
         $headers = [
             'apikey' => $key,
             'Authorization' => 'Bearer ' . $key,
         ];
 
-        // Build Supabase filter query
-        $query = "$url/songs_v2?select=title,status,quality,created_at,users(artist_name)&order=created_at.desc";
+        // ✅ Use correct foreign key join to fetch artist_name from users table
+        $query = "$url/songs_v2?select=title,status,quality,created_at,user_id,users!user_id(artist_name)&order=created_at.desc";
 
         $filters = [];
 
-        // Date filtering
         if ($request->filled('from')) {
             $filters[] = "created_at=gte." . $request->input('from');
         }
         if ($request->filled('to')) {
             $filters[] = "created_at=lte." . $request->input('to');
         }
-
-        // Status filtering
         if ($request->filled('status')) {
             $filters[] = "status=eq." . $request->input('status');
         }
@@ -39,7 +37,6 @@ class ReportsController extends Controller
             $query .= '&' . implode('&', $filters);
         }
 
-        // Limit results
         $query .= '&limit=50';
 
         $response = Http::withHeaders($headers)->get($query);
@@ -51,13 +48,8 @@ class ReportsController extends Controller
             ]);
         }
 
-        $submissions = $response->json();
-
-        $submissions = collect($submissions)->map(function ($item) {
-            $item['artist_name'] = '-'; // Default value
-            if (isset($item['users']) && is_array($item['users']) && count($item['users']) > 0) {
-                $item['artist_name'] = $item['users'][0]['artist_name'] ?? '-'; // Access the first element
-            }
+        $submissions = collect($response->json())->map(function ($item) {
+            $item['artist_name'] = $item['users']['artist_name'] ?? '-';
             return $item;
         });
 
@@ -70,12 +62,15 @@ class ReportsController extends Controller
     {
         $url = env('SUPABASE_URL') . '/rest/v1';
         $key = env('SUPABASE_KEY');
+
         $headers = [
             'apikey' => $key,
             'Authorization' => 'Bearer ' . $key,
         ];
 
-        $query = "$url/songs_v2?select=title,status,quality,created_at,users(artist_name)&order=created_at.desc";
+        // ✅ Same corrected query for export
+        $query = "$url/songs_v2?select=title,status,quality,created_at,user_id,users!user_id(artist_name)&order=created_at.desc";
+
         $filters = [];
 
         if ($request->filled('from')) {
@@ -87,9 +82,11 @@ class ReportsController extends Controller
         if ($request->filled('status')) {
             $filters[] = "status=eq." . $request->input('status');
         }
+
         if (count($filters)) {
             $query .= '&' . implode('&', $filters);
         }
+
         $query .= '&limit=1000';
 
         $response = Http::withHeaders($headers)->get($query);
@@ -98,17 +95,11 @@ class ReportsController extends Controller
             return back()->with('error', 'Failed to fetch data from Supabase: ' . $response->body());
         }
 
-        $submissions = $response->json();
-
-        $submissions = collect($submissions)->map(function ($item) {
-            $item['artist_name'] = '-'; // Default value
-            if (isset($item['users']) && is_array($item['users']) && count($item['users']) > 0) {
-                $item['artist_name'] = $item['users'][0]['artist_name'] ?? '-'; // Access the first element
-            }
+        $submissions = collect($response->json())->map(function ($item) {
+            $item['artist_name'] = $item['users']['artist_name'] ?? '-';
             return $item;
         });
 
-        // Render the PDF view
         $pdf = Pdf::loadView('reports_pdf', [
             'submissions' => $submissions,
         ]);

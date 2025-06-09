@@ -5,17 +5,6 @@
     <div class="max-w-4xl mx-auto">
         <!-- Filter & Export Container -->
         <div class="bg-white rounded-xl shadow p-6 mb-8 flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-           <div>
-             <!-- Export Button -->
-            <div class="flex items-end md:justify-end justify-center w-full">
-                <a href="{{ route('reports.export', request()->query()) }}"
-                   class="inline-flex items-center px-6 py-2 bg-red-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-600 transition w-full md:w-auto text-center justify-center"
-                >
-                    Export PDF
-                </a>
-            </div>
-            
-           </div>
             <form method="GET" action="{{ route('reports') }}" class="flex flex-col md:flex-row md:items-end gap-4 w-full">
                 <!-- From Date -->
                 <div>
@@ -63,7 +52,14 @@
                     </button>
                 </div>
             </form>
-           
+            <!-- Export Button -->
+            <div class="flex items-end">
+                <a href="{{ route('reports.export', request()->query()) }}"
+                   class="inline-flex items-center px-6 py-2 bg-red-500 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-red-600 transition w-full md:w-auto text-center justify-center"
+                >
+                    Export PDF
+                </a>
+            </div>
         </div>
 
         <!-- Submissions Table -->
@@ -83,9 +79,18 @@
                     <tbody>
                         @forelse($submissions as $submission)
                             <tr>
-                                <td class="px-4 py-2">
-                                    {{ data_get($submission, 'users.0.artist_name', '-') }}
-                                </td>
+                                             <td 
+class
+="
+px
+-4 
+py
+-2">
+{{ $submission[
+'artist_name'
+] ?? 
+'-'
+ }}</td>
                                 <td class="px-4 py-2">{{ $submission['title'] ?? '-' }}</td>
                                 <td class="px-4 py-2 font-semibold
                                     @if(strtolower($submission['status'] ?? '') === 'approved') text-green-600
