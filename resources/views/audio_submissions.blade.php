@@ -5,7 +5,6 @@
     <div class="max-w-6xl mx-auto px-4">
         <div class="flex items-center justify-between mb-8">
             <h2 class="text-3xl font-extrabold text-indigo-800 flex items-center">
-                <svg class="w-7 h-7 mr-2 text-indigo-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19V6h13M9 6L5 9.5M9 6l-4 3.5"></path></svg>
                 Audio and Lyrics Submissions
             </h2>
         </div>

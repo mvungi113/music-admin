@@ -40,4 +40,7 @@ Route::post('/song/{id}/pending', [AudioController::class, 'pending'])->name('so
 Route::get('/reports', [ReportsController::class, 'index'])->name('reports');
 Route::get('/reports/export', [App\Http\Controllers\ReportsController::class, 'export'])->name('reports.export');
 
+// Offensive Content Review
+Route::get('/offensive-content-review', [App\Http\Controllers\OffensiveContentReviewController::class, 'index'])->name('offensive_content_review');
+
 require __DIR__.'/auth.php';

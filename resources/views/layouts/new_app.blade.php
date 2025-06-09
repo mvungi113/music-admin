@@ -75,7 +75,7 @@
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="flex items-center space-x-3 hover:text-indigo-400">
+                    <a href="{{ route('offensive_content_review') }}" class="flex items-center space-x-3 hover:text-indigo-400 {{ request()->routeIs('offensive_content_review') ? 'text-indigo-400 font-semibold' : '' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-shield-exclamation" viewBox="0 0 16 16">
                             <path d="M8 0c-.69 0-1.342.132-1.972.378C3.12 1.07 1.5 2.522 1.5 4.5c0 6.356 5.5 10.5 6.5 10.5s6.5-4.144 6.5-10.5c0-1.978-1.62-3.43-4.528-4.122A7.01 7.01 0 0 0 8 0zm0 1c.638 0 1.25.122 1.82.35C13.09 2.02 14.5 3.29 14.5 4.5c0 5.822-4.5 9.5-6.5 9.5S1.5 10.322 1.5 4.5c0-1.21 1.41-2.48 4.68-3.15A6.99 6.99 0 0 1 8 1zm.93 4.412a.5.5 0 0 0-.858 0l-2.5 4.5A.5.5 0 0 0 6 10h4a.5.5 0 0 0 .428-.788l-2.5-4.5zM8 12a.5.5 0 1 0 0-1 .5.5 0 0 0 0 1z"/>
                         </svg>
