@@ -27,97 +27,127 @@
             </div>
         </div>
 
-        <!-- Line Graph -->
-        <div class="bg-white p-6 rounded-xl shadow hover:shadow-lg transition">
-            <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
-                <svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 17l6-6 4 4 8-8"></path>
-                </svg>
-                Content Overview (7-Day Trend)
-            </h2>
-            <canvas id="contentLineChart" height="100"></canvas>
+        <!-- Chart Container with fixed height -->
+        <div class="bg-white rounded-xl shadow p-6 mb-10">
+            <h2 class="text-xl font-semibold mb-4">Song Status Trends (All Time)</h2>
+            <div class="relative h-96 w-full">
+                <canvas id="songStatusChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
 @endsection
 
-@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const ctx = document.getElementById('contentLineChart').getContext('2d');
+    // Check if we have data to display
+    const labels = {!! json_encode($chart_labels ?? []) !!};
+
+    if (labels.length === 0) {
+        // No data available, display a message
+        const canvas = document.getElementById('songStatusChart');
+        const ctx = canvas.getContext('2d');
+        ctx.font = '16px Arial';
+        ctx.fillStyle = '#666';
+        ctx.textAlign = 'center';
+        ctx.fillText('No data available for chart', canvas.width / 2, canvas.height / 2);
+        return;
+    }
+
+    // Create chart with data
+    const ctx = document.getElementById('songStatusChart').getContext('2d');
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: {!! json_encode($chart_labels ?? []) !!},
+            labels: labels,
             datasets: [
                 {
                     label: 'Total Submissions',
                     data: {!! json_encode($chart_total_submissions ?? []) !!},
                     borderColor: '#6366f1',
                     backgroundColor: 'rgba(99,102,241,0.1)',
+                    borderWidth: 2,
                     fill: true,
                     tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
                 },
                 {
-                    label: 'Approved Content',
+                    label: 'Approved',
                     data: {!! json_encode($chart_approved_content ?? []) !!},
                     borderColor: '#10b981',
                     backgroundColor: 'rgba(16,185,129,0.1)',
+                    borderWidth: 2,
                     fill: true,
                     tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
                 },
                 {
-                    label: 'Flagged Content',
+                    label: 'Rejected',
                     data: {!! json_encode($chart_flagged_content ?? []) !!},
                     borderColor: '#ef4444',
                     backgroundColor: 'rgba(239,68,68,0.1)',
+                    borderWidth: 2,
                     fill: true,
                     tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
                 },
                 {
-                    label: 'Pending Music',
+                    label: 'Pending',
                     data: {!! json_encode($chart_pending_content ?? []) !!},
                     borderColor: '#a855f7',
                     backgroundColor: 'rgba(168,85,247,0.1)',
+                    borderWidth: 2,
                     fill: true,
                     tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                },
+                }
             ]
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                mode: 'index',
+                intersect: false,
+            },
             plugins: {
-                legend: { position: 'top' },
+                legend: { 
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 20
+                    }
+                },
                 tooltip: {
-                    backgroundColor: '#fff',
-                    titleColor: '#111',
-                    bodyColor: '#333',
-                    borderColor: '#6366f1',
+                    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                    titleColor: '#333',
+                    bodyColor: '#666',
+                    borderColor: '#ddd',
                     borderWidth: 1,
-                    padding: 12,
+                    padding: 10,
+                    displayColors: true
                 }
             },
             scales: {
-                x: {
-                    grid: { display: false },
-                    ticks: { color: '#888', font: { weight: 'bold' } }
-                },
                 y: {
-                    grid: { color: '#f3f4f6' },
-                    ticks: { color: '#888', font: { weight: 'bold' } }
+                    beginAtZero: true,
+                    ticks: { 
+                        precision: 0,
+                        color: '#666'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#666',
+                        maxRotation: 45,
+                        minRotation: 45
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
                 }
             }
         }
     });
 });
 </script>
-@endpush
